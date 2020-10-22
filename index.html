@@ -1,60 +1,222 @@
-<html>
-    <head>
-        <link rel="stylesheet" href="index.css">
-        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    </head>
-    <body>
+<style>
+    .col {
+        padding-top: 15px;
+        padding-bottom: 15px;
+        background-color: rgba(86, 61, 124, .15);
+        border: 1px solid rgba(86, 61, 124, .2);
+    }
 
-        <div id="app">
-            {{ message }}
+    .container {
+        padding: 15px;
+        margin-bottom: 30px;
+        background-color: rgba(0, 123, 255, .15);
+        border: 1px solid rgba(0, 123, 255, .2);
+    }
+
+    .person-list {
+        display: flex;
+        /* https://css-tricks.com/snippets/css/a-guide-to-flexbox/*/
+        flex-wrap: wrap;
+        list-style: none;
+        padding: 0;
+        padding: 20px;
+        margin: 0;
+        /*width: 100%;*/
+    }
+
+    .person {
+        flex: 1 0 300px;
+        width: calc(50% - 40px);
+        padding: 20px;
+        margin: 20px;
+        border: 2px solid grey;
+        border-top-width: 10px;
+    }
+
+    .person__details {
+        max-height: 0px;
+        overflow: hidden;
+        transition: all 1s;
+        /* https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions*/
+    }
+
+    .person--open .person__details {
+        max-height: 30px;
+    }
+
+</style>
+
+<head>
+    <title>Staar Wars</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+
+
+</head>
+
+<body>
+    <div id="app">
+        <div id='yoda'>
+            <pre>
+         _.=+._
+:.\`--._/[_/~|;\_.--'/.:::
+::.`.  ` __`\.-.(  .'.::::
+::::.`-:.`'..`-'/\'.::::::
+:::::::.\ `--')/  ) ::::::
+          `--'
+      </pre>
         </div>
 
-        <div id="app-2">
-          <span v-bind:title="message">
-            Hover your mouse over me for a few seconds
-            to see my dynamically bound title!
-          </span>
+        <div class="search-wrapper">
+            <label>Search here:</label>
+            <input type="text" v-model="search" placeholder="Search name.." />
         </div>
 
-        <div id="app-3">
-          <span v-if="seen">Now you see me</span>
-        </div>
-
-        <div id="app-4">
-          <ol>
-            <li v-for="todo in todos">
-              {{ todo.text }}
+        <ul>
+            <li v-for="user in filtered_names">
+                <input type="radio" name="selected_user" v-bind:id="user.name" v-model="selected_user" v-bind:value="user.name">
+                <label v-bind:for="user.name">{{ user.name }}</label>
             </li>
-          </ol>
+        </ul>
+
+        <button v-on:click='toggle'>Stare deep into {{ selected_user }} eyes that are {{ staar_names.find(element => element.name === selected_user).eye_color }}</button>
+        <ul class="person-list">
+            <li class="person" v-bind:class="isOpen ? 'person--open' : ''" v-for="user in filtered_names" :style={borderColor:user.eye_color}>
+                <div class="person__name">
+                    <h1>{{ user.name }}</h1>
+                </div>
+                <div class="person__details">Eye color: {{ user.eye_color }}</div>
+            </li>
+        </ul>
+
+
+        <div id="stare_button">
+            <!-- `greet` is the name of a method defined below -->
+            <button v-on:click="get_some_data" class="btn btn-info" data-toggle="collapse" data-target="#demo">Second button {{counter}} {{selected_user}}</button>
+
         </div>
 
-        <div id="app-5">
-          <p>{{ message }}</p>
-          <button v-on:click="reverseMessage">Reverse Message</button>
+        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">Simple collapsible</button>
+        <div id="demo" class="collapse">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </div>
 
-        <div id="app-6">
-          <p>{{ message }}</p>
-          <input v-model="message">
+
+        <ul>
+            <li v-for="user in filtered_names">
+                <button v-on:click="find_planet($event, user.homeworld)">Get homeworld for user {{user.name}} - {{planet_info}}</button>
+                <!--        <input type="radio" name="selected_user" v-bind:id="user.name" v-model="selected_user">
+  			<label v-bind:for="user.name">{{ user.name }}</label>-->
+            </li>
+        </ul>
+
+
+        <div id="snowspeeder">
+            <pre>
+                 ||          ||                  
+    \------||| /\/\/\ |||------/                        
+     \     |||  |---| |||     /                      
+      \   |!!|  |\_/| |!!|   /  
+       \  |!|   || ||  |!|  /    
+        \  |    \___/   |  /                  
+         \ |  /------\  | /                            
+          \| /        \ |/  
+           |            |
+
+ 
+ </pre>
         </div>
 
-        <div id="app-7">
-          <ol>
-            <!--
-              Now we provide each todo-item with the todo object
-              it's representing, so that its content can be dynamic.
-              We also need to provide each component with a "key",
-              which will be explained later.
-            -->
-            <todo-item
-              v-for="item in groceryList"
-              v-bind:todo="item"
-              v-bind:key="item.id"
-            ></todo-item>
-          </ol>
-        </div>
+    </div> <!-- End div id app-->
 
-        <script src="index.js"></script>
-    </body>
-</html>
 
+</body>
+
+
+
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            search: '',
+            staar_names: [],
+            staar_planets: [],
+            selected_user: "",
+            counter: 0,
+            planet_info: "select a planet",
+            isOpen: false,
+        },
+        created() {
+            var vm = this
+            axios.get('https://swapi.dev/api/people/')
+                .then(function(response) {
+                    vm.staar_names = response.data.results;
+                    vm.selected_user = response.data.results[0].name;
+                })
+            var vm = this
+            axios.get('https://swapi.dev/api/planets/')
+                .then(function(response) {
+                    vm.staar_planets = response.data.results
+                })
+        },
+        // define methods under the `methods` object
+        methods: {
+            stare_in_eyes: function(event) {
+                // `this` inside methods points to the Vue instance
+                alert('Hello ' + this.selected_user + '!')
+                // `event` is the native DOM event
+                if (event) {
+                    alert(event.target.tagName)
+                }
+            },
+            get_some_data: function(event) {
+                console.log("Hey");
+                console.log(event);
+                this.counter += 1;
+
+
+            },
+            find_planet: function(event, url) {
+                console.log("searching planet");
+                url = url.replace('http', 'https');
+                var temp = this;
+                axios.get(url)
+                    .then(function(response) {
+                        //  this.info = response
+                        console.log(response)
+                        console.log(temp.planet_info);
+                        temp.planet_info = response.data.name;
+                        console.log(temp.planet_info);
+                        //        this.counter += 1
+                    })
+            },
+            toggle: function() {
+                this.isOpen = !this.isOpen
+            },
+        },
+        computed: {
+            filtered_names() {
+                return this.staar_names.filter(user => {
+                    return user.name.toLowerCase().includes(this.search.toLowerCase())
+                })
+            }
+        }
+    })
+
+</script>
